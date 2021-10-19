@@ -1,60 +1,84 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
 import phoneBookAction from "redux/phoneBook/phoneBook-action.js";
 import { Form, Label } from "./FormTextInput.styled";
 
-class FormTextInput extends Component {
-  state = {
-    name: "",
-    number: "",
-  };
+export function FormTextInput({ stateContacts, onSubmit }) {
+  const [name, setName] = useState("");
+  const [number, setNumber] = useState("");
 
-  handleChange = (e) => {
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
-  };
+  console.log("stateContacts: ", stateContacts);
 
-  handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    this.props.onSubmit(this.state);
-    this.setState({ name: "", number: "" });
+
+    for (const el of stateContacts) {
+      const names = el.name;
+      if (names === name) {
+        return alert(`${name} is already in contacts`);
+      }
+    }
+
+    onSubmit({ name, number });
+    setName("");
+    setNumber("");
   };
 
-  render() {
-    return (
-      <Form onSubmit={this.handleSubmit}>
-        <Label>
-          <span>Name</span>
-          <input
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
-            required
-            value={this.state.name}
-            onChange={this.handleChange}
-          />
-        </Label>
-        <Label>
-          <span> Number</span>
-          <input
-            type="tel"
-            name="number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
-            required
-            value={this.state.number}
-            onChange={this.handleChange}
-          />
-        </Label>
-        <button type="submit">Add contact</button>{" "}
-      </Form>
-    );
-  }
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case "name":
+        setName(value);
+        break;
+
+      case "number":
+        setNumber(value);
+        break;
+
+      default:
+        return;
+    }
+  };
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <Label>
+        <span>Name</span>
+        <input
+          type="text"
+          name="name"
+          pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
+          title="Имя может состоять только из букв, апострофа, тире и пробелов. Например Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan и т. п."
+          required
+          value={name}
+          onChange={handleChange}
+        />
+      </Label>
+      <Label>
+        <span> Number</span>
+        <input
+          type="tel"
+          name="number"
+          pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
+          title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
+          required
+          value={number}
+          onChange={handleChange}
+        />
+      </Label>
+      <button type="submit">Add contact</button>{" "}
+    </Form>
+  );
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  onSubmit: (text) => dispatch(phoneBookAction.addName(text)),
+const mapStateToProps = (x) => ({
+  stateContacts: x.phoneBook.contacts,
 });
 
-export default connect(null, mapDispatchToProps)(FormTextInput);
+const mapDispatchToProps = (dispatch) => ({
+  onSubmit: (text) => {
+    return dispatch(phoneBookAction.addName(text));
+  },
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormTextInput);

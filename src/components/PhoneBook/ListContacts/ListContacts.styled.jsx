@@ -6,3 +6,8 @@ export const Ul = styled.ul`
   box-sizing: border-box;
   padding: 3px 13px;
 `;
+
+export const Span = styled.span`
+  color: tomato;
+  font-size: 30px;
+`;

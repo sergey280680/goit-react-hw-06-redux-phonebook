@@ -21,6 +21,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   onChange: (e) => dispatch(phoneBookAction.changeFilter(e.target.value)),
+  onReset: (e) => dispatch(phoneBookAction.changeFilter("")),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
